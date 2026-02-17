@@ -7,6 +7,7 @@ import os
 import re
 import threading
 import time
+import tempfile
 from email.header import decode_header
 from email.utils import parseaddr
 from html import unescape
@@ -219,6 +220,14 @@ def _poll_loop(interval_seconds: int) -> None:
 
 def _acquire_lock(lockfile: str) -> bool:
     try:
+        lock_dir = os.path.dirname(lockfile)
+        if lock_dir:
+            os.makedirs(lock_dir, exist_ok=True)
+    except Exception as exc:
+        print(f"[imap] lock directory error for {lockfile}: {exc}")
+        return False
+
+    try:
         fd = os.open(lockfile, os.O_CREAT | os.O_EXCL | os.O_RDWR)
         os.write(fd, str(os.getpid()).encode("utf-8"))
         os.close(fd)
@@ -261,12 +270,22 @@ def _acquire_lock(lockfile: str) -> bool:
             return False
 
 
+def _normalize_lockfile(lockfile: str) -> str:
+    expanded = os.path.expandvars(os.path.expanduser(lockfile))
+    # Common Linux default that breaks on Windows.
+    if os.name == "nt" and expanded.startswith("/tmp/"):
+        return os.path.join(tempfile.gettempdir(), os.path.basename(expanded))
+    return expanded
+
+
 def start_imap_poller() -> None:
     enabled = os.getenv("IMAP_POLLING_ENABLED", "false").lower() in {"1", "true", "yes"}
     if not enabled:
         return
 
     lockfile = os.getenv("IMAP_LOCKFILE")
+    if lockfile:
+        lockfile = _normalize_lockfile(lockfile)
     if lockfile and not _acquire_lock(lockfile):
         return
 
