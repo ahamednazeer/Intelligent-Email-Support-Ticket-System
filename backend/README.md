@@ -42,6 +42,7 @@ python run.py
 ## Notes
 - Classification uses a trainable ML model when available and falls back to heuristics if no model is trained.
 - ML classification is trainable: label tickets via `POST /tickets/{id}/label` and call `POST /retrain`.
+- Grok-based segmentation is supported via xAI API. Set `CLASSIFIER_PROVIDER=grok_first` (recommended) to try Grok first and fallback to local rules/ML, `CLASSIFIER_PROVIDER=grok` to prefer Grok with fallback, or `CLASSIFIER_PROVIDER=local` to disable Grok. Configure `GROK_API_KEY` (or `XAI_API_KEY`) and optional `GROK_MODEL`, `GROK_API_BASE_URL`. Recommended quality model: `grok-4`.
 - Routing uses agent skills and workload to assign tickets when available.
 - Auto-assignment can be gated by admin review with `ASSIGNMENT_REQUIRES_REVIEW=true` (routes set `REVIEW_PENDING` and suggested agent until approved).
 - Auth uses JWT with role-based access (`ADMIN`, `SUPERVISOR`, plus category roles: `BILLING`, `TECHNICAL`, `ACCOUNT`, `COMPLAINT`, `FEATURE_REQUEST`, `GENERAL`).

@@ -4,6 +4,7 @@ import os
 
 from app.schemas import ClassificationResult, PreprocessResult
 from app.ml.predict import predict_category
+from app.modules import grok_classifier
 
 _CATEGORY_KEYWORDS = {
     "billing": [
@@ -149,10 +150,16 @@ _CATEGORY_KEYWORDS = {
     ],
     "complaint": [
         "complaint",
+        "formal complaint",
+        "file a complaint",
+        "lodge a complaint",
         "angry",
         "upset",
         "frustrated",
         "disappointed",
+        "not satisfied",
+        "not satisfactory",
+        "unsatisfactory",
         "unacceptable",
         "bad",
         "terrible",
@@ -160,15 +167,26 @@ _CATEGORY_KEYWORDS = {
         "poor",
         "rude",
         "unhappy",
+        "inconvenience",
+        "disruption",
+        "delay",
+        "delayed response",
+        "poor experience",
+        "bad experience",
+        "service quality",
+        "customer service",
+        "not function as expected",
+        "did not function as expected",
         "escalate",
         "escalation",
         "complain",
         "dissatisfied",
+        "investigate this matter",
+        "resolve this issue",
     ],
     "feature_request": [
         "feature request",
         "feature",
-        "request",
         "enhancement",
         "improve",
         "improvement",
@@ -187,7 +205,6 @@ _CATEGORY_KEYWORDS = {
     "general": [
         "question",
         "help",
-        "support",
         "info",
         "information",
         "how",
@@ -245,10 +262,24 @@ _CATEGORY_STRONG_PHRASES = {
         "mfa",
     ],
     "complaint": [
+        "lodge a complaint",
+        "formal complaint",
+        "file a complaint",
         "poor service",
         "bad service",
         "very disappointed",
+        "not satisfied",
+        "not satisfactory",
+        "unsatisfactory",
         "unacceptable",
+        "poor experience",
+        "bad experience",
+        "service quality",
+        "customer service issue",
+        "did not function as expected",
+        "caused inconvenience",
+        "caused disruption",
+        "investigate this matter",
         "escalate",
     ],
     "feature_request": [
@@ -298,6 +329,21 @@ _HARD_RULES = {
         "account locked",
         "verification code",
     ],
+    "complaint": [
+        "lodge a complaint",
+        "formal complaint",
+        "file a complaint",
+        "not satisfactory",
+        "not satisfied",
+        "unsatisfactory",
+        "caused inconvenience",
+        "caused disruption",
+        "poor service",
+        "bad service",
+        "very disappointed",
+        "unacceptable service",
+        "customer service issue",
+    ],
 }
 
 _SUBCATEGORY_HINTS = {
@@ -310,7 +356,7 @@ _SUBCATEGORY_HINTS = {
 }
 
 
-def classify(preprocess: PreprocessResult) -> ClassificationResult:
+def _classify_local(preprocess: PreprocessResult) -> ClassificationResult:
     text = preprocess.cleaned_text
     tokens = preprocess.tokens
 
@@ -400,3 +446,26 @@ def classify(preprocess: PreprocessResult) -> ClassificationResult:
         confidence_score=round(confidence, 2),
         needs_manual_review=True if best_score == 0 else confidence < 0.45,
     )
+
+
+def _classifier_provider() -> str:
+    provider = os.getenv("CLASSIFIER_PROVIDER", "grok_first").strip().lower()
+    if provider not in {"local", "grok", "grok_first"}:
+        return "grok_first"
+    return provider
+
+
+def classify(preprocess: PreprocessResult) -> ClassificationResult:
+    provider = _classifier_provider()
+    local_result = _classify_local(preprocess)
+
+    if provider == "local":
+        return local_result
+
+    # Grok-first: if configured and available, use it; otherwise fallback to local rules/ML.
+    if not grok_classifier.is_enabled():
+        return local_result
+    grok_result = grok_classifier.classify(preprocess)
+    if grok_result is not None:
+        return grok_result
+    return local_result
