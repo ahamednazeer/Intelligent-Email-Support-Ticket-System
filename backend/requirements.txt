@@ -2,6 +2,7 @@ fastapi==0.115.6
 uvicorn==0.30.6
 pydantic==2.9.2
 pyjwt==2.9.0
+bcrypt==3.2.2
 passlib[bcrypt]==1.7.4
 scikit-learn==1.5.2
 joblib==1.4.2
