@@ -1,42 +1,48 @@
-# Stage 1: Build environment
-FROM python:3.11-slim AS builder
+# =========================
+# Stage 1: Builder
+# =========================
+FROM --platform=$BUILDPLATFORM python:3.11-slim AS builder
 
 WORKDIR /app
 
-# Install build dependencies if needed (e.g., for compiled Python packages like scikit-learn)
+# Install only essential build dependency
 RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc \
-    build-essential \
     && rm -rf /var/lib/apt/lists/*
 
-# Create and activate virtual environment
+# Create virtual environment
 RUN python -m venv /opt/venv
+
 ENV PATH="/opt/venv/bin:$PATH"
 
-# Install Python dependencies
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+# Upgrade pip
+RUN pip install --upgrade pip setuptools wheel
 
-# Stage 2: Runtime environment
-FROM python:3.11-slim AS runner
+# Copy requirements
+COPY requirements.txt .
+
+# Install dependencies (binary wheels preferred)
+RUN pip install --no-cache-dir --prefer-binary -r requirements.txt
+
+
+# =========================
+# Stage 2: Runner
+# =========================
+FROM python:3.11-slim
 
 WORKDIR /app
 
-# Copy virtual environment from builder stage
+# Copy only virtual environment
 COPY --from=builder /opt/venv /opt/venv
+
 ENV PATH="/opt/venv/bin:$PATH"
-
-# Copy application code
-COPY . .
-
-# Expose port
-EXPOSE 8000
-
-# Set environment variables
-ENV HOST=0.0.0.0
-ENV PORT=8000
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-# Run the application
-CMD ["python", "run.py"]
+# Copy app
+COPY . .
+
+EXPOSE 8000
+
+# FastAPI production start
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
