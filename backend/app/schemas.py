@@ -29,7 +29,7 @@ class UserCreate(BaseModel):
     password: str
     role: str = Field(
         ...,
-        description="ADMIN, SUPERVISOR, or category role (BILLING, TECHNICAL, ACCOUNT, COMPLAINT, FEATURE_REQUEST, GENERAL)",
+        description="ADMIN, SUPERVISOR, or category role (BILLING, TECHNICAL, ACCOUNT, COMPLAINT, FEATURE_REQUEST, GENERAL, GOVERNMENT)",
     )
     full_name: Optional[str] = None
     email: Optional[str] = None

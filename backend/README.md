@@ -45,7 +45,7 @@ python run.py
 - Grok-based segmentation is supported via xAI API. Set `CLASSIFIER_PROVIDER=grok_first` (recommended) to try Grok first and fallback to local rules/ML, `CLASSIFIER_PROVIDER=grok` to prefer Grok with fallback, or `CLASSIFIER_PROVIDER=local` to disable Grok. Configure `GROK_API_KEY` (or `XAI_API_KEY`) and optional `GROK_MODEL`, `GROK_API_BASE_URL`. Recommended quality model: `grok-4`.
 - Routing uses agent skills and workload to assign tickets when available.
 - Auto-assignment can be gated by admin review with `ASSIGNMENT_REQUIRES_REVIEW=true` (routes set `REVIEW_PENDING` and suggested agent until approved).
-- Auth uses JWT with role-based access (`ADMIN`, `SUPERVISOR`, plus category roles: `BILLING`, `TECHNICAL`, `ACCOUNT`, `COMPLAINT`, `FEATURE_REQUEST`, `GENERAL`).
+- Auth uses JWT with role-based access (`ADMIN`, `SUPERVISOR`, plus category roles: `BILLING`, `TECHNICAL`, `ACCOUNT`, `COMPLAINT`, `FEATURE_REQUEST`, `GENERAL`, `GOVERNMENT`).
 - Outbound email is a hook (SMTP). Configure `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, `SMTP_FROM` to send real emails.
 - Inbound email can be ingested via IMAP polling (disabled by default). Set `IMAP_POLLING_ENABLED=true` and configure `IMAP_HOST`, `IMAP_PORT`, `IMAP_USER`, `IMAP_PASSWORD`, `IMAP_FOLDER`, `IMAP_POLL_INTERVAL`. Use `IMAP_SEARCH_CRITERIA=UNSEEN` and `IMAP_MARK_SEEN=true` to avoid duplicates.
 - The backend auto-loads `backend/.env` on startup (via `python-dotenv`).

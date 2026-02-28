@@ -31,6 +31,7 @@ _BASE_PRIORITY = {
     "account": "MEDIUM",
     "complaint": "HIGH",
     "feature_request": "LOW",
+    "government": "HIGH",
     "general": "LOW",
 }
 

@@ -56,6 +56,7 @@ AGENT_ROLES = {
     "COMPLAINT",
     "FEATURE_REQUEST",
     "GENERAL",
+    "GOVERNMENT",
 }
 ALL_ROLES = {"ADMIN", "SUPERVISOR"} | AGENT_ROLES
 DEPARTMENT_BY_ROLE = {
@@ -65,6 +66,16 @@ DEPARTMENT_BY_ROLE = {
     "COMPLAINT": "Customer Care",
     "FEATURE_REQUEST": "Product",
     "GENERAL": "General",
+    "GOVERNMENT": "Government",
+}
+ROLE_SKILLS_BY_ROLE = {
+    "BILLING": {"billing"},
+    "TECHNICAL": {"technical"},
+    "ACCOUNT": {"account"},
+    "COMPLAINT": {"complaint"},
+    "FEATURE_REQUEST": {"feature_request"},
+    "GENERAL": {"general"},
+    "GOVERNMENT": {"government", "general"},
 }
 
 cors_origins = os.getenv("CORS_ORIGINS", "http://localhost:3000").split(",")
@@ -134,20 +145,23 @@ def create_user(
     _: UserResponse = Depends(require_roles("ADMIN")),
 ) -> UserResponse:
     role = payload.role.upper()
+    if role == "GOVERMENT":
+        role = "GOVERNMENT"
     if role not in ALL_ROLES:
         raise HTTPException(
             status_code=400,
-            detail="Role must be ADMIN, SUPERVISOR, or a category role (BILLING, TECHNICAL, ACCOUNT, COMPLAINT, FEATURE_REQUEST, GENERAL)",
+            detail="Role must be ADMIN, SUPERVISOR, or a category role (BILLING, TECHNICAL, ACCOUNT, COMPLAINT, FEATURE_REQUEST, GENERAL, GOVERNMENT)",
         )
 
     updated_payload = payload
     if role in AGENT_ROLES and not payload.agent_id:
+        role_skills = sorted(ROLE_SKILLS_BY_ROLE.get(role, {role.lower()}))
         agent = agent_repo.create_agent(
             AgentCreate(
                 name=payload.full_name or payload.username,
                 email=payload.email,
                 department=DEPARTMENT_BY_ROLE.get(role, "General"),
-                skills=[role.lower()],
+                skills=role_skills,
                 tier="L1",
                 active=True,
             )
@@ -158,8 +172,10 @@ def create_user(
             agent = agent_repo.get_agent(payload.agent_id)
             if not agent:
                 raise HTTPException(status_code=400, detail="Agent profile not found")
-            if role in AGENT_ROLES and role.lower() not in agent.skills:
-                raise HTTPException(status_code=400, detail="Agent profile missing required category skill")
+            if role in AGENT_ROLES:
+                required_skills = ROLE_SKILLS_BY_ROLE.get(role, {role.lower()})
+                if not required_skills.intersection(set(agent.skills)):
+                    raise HTTPException(status_code=400, detail="Agent profile missing required category skill")
         updated_payload = payload.model_copy(update={"role": role})
 
     return user_repo.create_user(updated_payload)
@@ -266,7 +282,7 @@ def create_agent(
     payload: AgentCreate,
     _: UserResponse = Depends(require_roles("ADMIN")),
 ) -> AgentResponse:
-    allowed_skills = {"billing", "technical", "account", "complaint", "feature_request", "general"}
+    allowed_skills = {"billing", "technical", "account", "complaint", "feature_request", "general", "government"}
     invalid = [skill for skill in payload.skills if skill not in allowed_skills]
     if invalid:
         raise HTTPException(status_code=400, detail=f"Invalid skill(s): {', '.join(invalid)}")
@@ -438,7 +454,7 @@ def label_ticket(
     if not ticket:
         raise HTTPException(status_code=404, detail="Ticket not found")
 
-    allowed_categories = {"billing", "technical", "account", "complaint", "feature_request", "general"}
+    allowed_categories = {"billing", "technical", "account", "complaint", "feature_request", "government", "general"}
     if payload.label_category not in allowed_categories:
         raise HTTPException(status_code=400, detail="Invalid label category")
 
@@ -484,7 +500,7 @@ def assign_ticket(
         if not target_agent.active:
             raise HTTPException(status_code=400, detail="Agent is inactive")
         category = ticket.label_category or ticket.category
-        if category and category in {"billing", "technical", "account", "complaint", "feature_request", "general"}:
+        if category and category in {"billing", "technical", "account", "complaint", "feature_request", "government", "general"}:
             if category not in target_agent.skills:
                 raise HTTPException(status_code=400, detail="Agent does not match ticket category")
 

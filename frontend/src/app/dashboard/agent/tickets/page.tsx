@@ -52,14 +52,14 @@ export default function AgentTicketsPage() {
         setRefreshing(true);
         try {
             const data = await api.listTickets();
-            const incoming = data || [];
-            const newTickets = incoming.filter((ticket) => !knownTicketIds.current.has(ticket.ticket_id));
+            const incoming: TicketItem[] = (data || []) as TicketItem[];
+            const newTickets = incoming.filter((ticket: TicketItem) => !knownTicketIds.current.has(ticket.ticket_id));
             setTickets(incoming);
             if (hasLoaded.current && showToast && newTickets.length > 0) {
                 const count = newTickets.length;
                 setToastMessage(`${count} new ticket${count === 1 ? '' : 's'} in queue`);
             }
-            knownTicketIds.current = new Set(incoming.map((ticket) => ticket.ticket_id));
+            knownTicketIds.current = new Set(incoming.map((ticket: TicketItem) => ticket.ticket_id));
         } catch (error) {
             console.error('Failed to refresh tickets', error);
         } finally {
@@ -74,11 +74,12 @@ export default function AgentTicketsPage() {
                 const user = await api.getMe();
                 setRole(user.role);
                 const data = await api.listTickets();
-                setTickets(data || []);
-                knownTicketIds.current = new Set((data || []).map((ticket) => ticket.ticket_id));
+                const incomingTickets: TicketItem[] = (data || []) as TicketItem[];
+                setTickets(incomingTickets);
+                knownTicketIds.current = new Set(incomingTickets.map((ticket: TicketItem) => ticket.ticket_id));
                 if (user.role === 'SUPERVISOR') {
                     const agentData = await api.listAgents();
-                    setAgents(agentData || []);
+                    setAgents((agentData || []) as AgentItem[]);
                 }
             } catch (error) {
                 console.error('Failed to load tickets', error);

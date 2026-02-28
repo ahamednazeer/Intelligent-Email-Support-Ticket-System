@@ -57,7 +57,7 @@ const STATUS_OPTIONS = [
     'ESCALATED',
     'RESOLVED',
 ];
-const CATEGORY_OPTIONS = ['billing', 'technical', 'account', 'complaint', 'feature_request', 'general'];
+const CATEGORY_OPTIONS = ['billing', 'technical', 'account', 'complaint', 'feature_request', 'government', 'general'];
 
 interface AgentItem {
     agent_id: string;

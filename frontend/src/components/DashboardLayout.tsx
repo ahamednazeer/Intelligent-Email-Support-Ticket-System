@@ -48,7 +48,7 @@ const menuItemsByRole: Record<string, MenuItem[]> = {
         { icon: ClipboardText, label: 'Team Tickets', path: '/dashboard/agent/tickets' },
     ],
 };
-const AGENT_ROLES = ['BILLING', 'TECHNICAL', 'ACCOUNT', 'COMPLAINT', 'FEATURE_REQUEST', 'GENERAL'];
+const AGENT_ROLES = ['BILLING', 'TECHNICAL', 'ACCOUNT', 'COMPLAINT', 'FEATURE_REQUEST', 'GENERAL', 'GOVERNMENT'];
 const agentMenu: MenuItem[] = [
     { icon: Gauge, label: 'Overview', path: '/dashboard/agent' },
     { icon: ClipboardText, label: 'My Tickets', path: '/dashboard/agent/tickets' },

@@ -11,6 +11,7 @@ _DEPARTMENT_BY_CATEGORY = {
     "account": "Account",
     "complaint": "Customer Care",
     "feature_request": "Product",
+    "government": "Government",
     "general": "General",
 }
 

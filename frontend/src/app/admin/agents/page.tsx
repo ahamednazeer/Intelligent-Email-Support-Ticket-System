@@ -38,7 +38,7 @@ export default function AdminAgentsPage() {
     const [passwordDrafts, setPasswordDrafts] = useState<Record<string, string>>({});
     const [resetting, setResetting] = useState<Record<string, boolean>>({});
     const [toggling, setToggling] = useState<Record<string, boolean>>({});
-    const skillOptions = ['billing', 'technical', 'account', 'complaint', 'feature_request', 'general'];
+    const skillOptions = ['billing', 'technical', 'account', 'complaint', 'feature_request', 'general', 'government'];
     const [form, setForm] = useState({
         name: '',
         email: '',

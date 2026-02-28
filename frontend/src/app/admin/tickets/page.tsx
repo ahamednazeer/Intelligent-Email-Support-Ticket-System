@@ -67,14 +67,14 @@ export default function AdminTicketsPage() {
                 }
             }
             const ticketData = await api.listTickets();
-            const incoming = ticketData || [];
-            const newTickets = incoming.filter((ticket) => !knownTicketIds.current.has(ticket.ticket_id));
+            const incoming: TicketItem[] = (ticketData || []) as TicketItem[];
+            const newTickets = incoming.filter((ticket: TicketItem) => !knownTicketIds.current.has(ticket.ticket_id));
             setTickets(incoming);
             if (hasLoaded.current && showToast && newTickets.length > 0) {
                 const count = newTickets.length;
                 setToastMessage(`${count} new ticket${count === 1 ? '' : 's'} ingested`);
             }
-            knownTicketIds.current = new Set(incoming.map((ticket) => ticket.ticket_id));
+            knownTicketIds.current = new Set(incoming.map((ticket: TicketItem) => ticket.ticket_id));
         } catch (error) {
             console.error('Failed to refresh tickets', error);
         } finally {
@@ -90,9 +90,11 @@ export default function AdminTicketsPage() {
                     api.listTickets(),
                     api.listAgents(),
                 ]);
-                setTickets(ticketData || []);
-                setAgents(agentData || []);
-                knownTicketIds.current = new Set((ticketData || []).map((ticket) => ticket.ticket_id));
+                const incomingTickets: TicketItem[] = (ticketData || []) as TicketItem[];
+                const incomingAgents: AgentItem[] = (agentData || []) as AgentItem[];
+                setTickets(incomingTickets);
+                setAgents(incomingAgents);
+                knownTicketIds.current = new Set(incomingTickets.map((ticket: TicketItem) => ticket.ticket_id));
             } catch (error) {
                 console.error('Failed to load tickets', error);
             } finally {

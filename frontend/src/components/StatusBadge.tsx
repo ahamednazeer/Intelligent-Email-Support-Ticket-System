@@ -43,6 +43,7 @@ const statusStyles: Record<string, string> = {
     COMPLAINT: 'text-red-400 bg-red-950/50 border-red-800',
     FEATURE_REQUEST: 'text-purple-400 bg-purple-950/50 border-purple-800',
     GENERAL: 'text-slate-400 bg-slate-950/50 border-slate-800',
+    GOVERNMENT: 'text-emerald-400 bg-emerald-950/50 border-emerald-800',
 };
 
 export function StatusBadge({ status, className = '' }: StatusBadgeProps) {

@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation';
 
 export default function LoginPage() {
     const router = useRouter();
-    const agentRoles = ['BILLING', 'TECHNICAL', 'ACCOUNT', 'COMPLAINT', 'FEATURE_REQUEST', 'GENERAL'];
+    const agentRoles = ['BILLING', 'TECHNICAL', 'ACCOUNT', 'COMPLAINT', 'FEATURE_REQUEST', 'GENERAL', 'GOVERNMENT'];
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');

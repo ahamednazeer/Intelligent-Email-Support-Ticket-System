@@ -13,18 +13,20 @@ _ALLOWED_CATEGORIES = {
     "account",
     "complaint",
     "feature_request",
+    "government",
     "general",
 }
 
 _SYSTEM_PROMPT = (
     "You classify support tickets for an email support system.\n"
-    "Return exactly one category from: billing, technical, account, complaint, feature_request, general.\n"
+    "Return exactly one category from: billing, technical, account, complaint, feature_request, government, general.\n"
     "Hard routing rules:\n"
     "- technical: outages, bugs, errors, blank screen, app/page/dashboard not loading, performance failures.\n"
     "- billing: charges, invoices, refunds, payment failures, duplicate charges.\n"
     "- account: login credentials, account lock, 2FA, verification, access permissions.\n"
     "- complaint: dissatisfaction/escalation about service quality.\n"
     "- feature_request: asks for new features/enhancements.\n"
+    "- government: public-sector, regulatory, compliance, legal notice, tender/procurement requests.\n"
     "- general: everything else.\n"
     "If text includes login + system failure, classify as technical unless it is clearly credentials/account-only.\n"
     "Respond as strict JSON object only with keys: ticket_category, subcategory, intent_label, confidence_score, needs_manual_review."

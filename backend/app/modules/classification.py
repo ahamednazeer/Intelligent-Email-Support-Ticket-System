@@ -202,6 +202,32 @@ _CATEGORY_KEYWORDS = {
         "please add",
         "new feature",
     ],
+    "government": [
+        "government",
+        "gov",
+        "public sector",
+        "ministry",
+        "agency",
+        "authority",
+        "regulatory",
+        "regulation",
+        "compliance",
+        "compliant",
+        "mandate",
+        "legal notice",
+        "official request",
+        "tender",
+        "procurement",
+        "rfi",
+        "rfp",
+        "security clearance",
+        "data residency",
+        "public records",
+        "foia",
+        "audit request",
+        "audit finding",
+        "governance",
+    ],
     "general": [
         "question",
         "help",
@@ -289,6 +315,17 @@ _CATEGORY_STRONG_PHRASES = {
         "new feature",
         "add feature",
     ],
+    "government": [
+        "government request",
+        "public sector",
+        "regulatory requirement",
+        "compliance requirement",
+        "official notice",
+        "legal notice",
+        "audit request",
+        "tender process",
+        "procurement request",
+    ],
 }
 
 _HARD_RULES = {
@@ -344,6 +381,14 @@ _HARD_RULES = {
         "unacceptable service",
         "customer service issue",
     ],
+    "government": [
+        "regulatory requirement",
+        "compliance requirement",
+        "government notice",
+        "official notice",
+        "legal notice",
+        "audit finding",
+    ],
 }
 
 _SUBCATEGORY_HINTS = {
@@ -352,6 +397,7 @@ _SUBCATEGORY_HINTS = {
     "account": "access",
     "complaint": "service",
     "feature_request": "product",
+    "government": "compliance",
     "general": "general",
 }
 
