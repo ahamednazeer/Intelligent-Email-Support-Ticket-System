@@ -1,0 +1,27 @@
+name: Build and Push Docker Image
+
+on:
+push:
+branches: [ "main" ]
+
+jobs:
+build:
+runs-on: ubuntu-latest
+
+steps:
+  - name: Checkout code
+    uses: actions/checkout@v4
+
+  - name: Set up Docker Buildx
+    uses: docker/setup-buildx-action@v3
+
+  - name: Docker Login (inline)
+    run: |
+      docker login -u ahamednazeer -p YOUR_DOCKER_TOKEN
+
+  - name: Build and Push Image
+    run: |
+      docker buildx build \
+        --platform linux/amd64 \
+        -t ahamednazeer/intelligent-email-support-ticket:be-0.1 \
+        --push .
